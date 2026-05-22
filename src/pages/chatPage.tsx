@@ -68,7 +68,7 @@ const ChatPage = () =>
 			);
 
 			setMessages(data);
-		} catch (err)
+		} catch (err:any)
 		{
 			console.log(err);
 		} finally

@@ -29,7 +29,7 @@ const RequestMeeting = () =>
 				"Meeting request sent"
 			);
 
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log(err);
 		}

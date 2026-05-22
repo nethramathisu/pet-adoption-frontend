@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPets } from "../services/petService";
-import { toggleFavorite, } from "../services/favoriteService";
 import { useAuth } from "../context/AuthContext";
 
 interface Pet
@@ -38,7 +37,7 @@ const Home = () =>
 			const data = await getPets(query);
 
 			setPets(data.pets || data);
-		} catch (err)
+		} catch (err:any)
 		{
 			console.log(err);
 		} finally

@@ -30,7 +30,7 @@ const AssignFosterModal = ({ petId, onClose, onSuccess }: Props) =>
 
 				const data = await getAllFosters();
 				setFosters(data || []);
-			} catch (err)
+			} catch (err:any)
 			{
 				console.log(err);
 				toast.error("Failed to load fosters");

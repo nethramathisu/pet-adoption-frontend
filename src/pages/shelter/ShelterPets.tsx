@@ -31,7 +31,7 @@ const ShelterPets = () =>
 			const res = await API.get("/pet");
 
 			setPets(res.data?.pets || res.data || []);
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log(err);
 			setPets([]);
@@ -90,7 +90,7 @@ const ShelterPets = () =>
 			toast.success("Foster removed");
 
 			fetchPets();
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log(err);
 		}

@@ -70,7 +70,7 @@ const PetDetails = () =>
 				);
 
 				setPet(res.data);
-			} catch (err)
+			} catch (err:any)
 			{
 				console.log(err);
 			} finally
@@ -100,7 +100,7 @@ const PetDetails = () =>
 				);
 
 				setFavorites(favIds);
-			} catch (err)
+			} catch (err:any)
 			{
 				console.log(err);
 			}
@@ -124,7 +124,7 @@ const PetDetails = () =>
 						)
 						: [...prev, petId]
 				);
-			} catch (err)
+			}catch(err:any)
 			{
 				console.log(err);
 			}
@@ -149,7 +149,7 @@ const PetDetails = () =>
 			);
 
 			setMessage("");
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log(err);
 
@@ -277,14 +277,14 @@ const PetDetails = () =>
 				</div>
 				{/* PET VIDEO */}
 				{/* PET VIDEO */}
-				{pet.videos?.length > 0 && (
+				{(pet.videos?.length ?? 0 )> 0 && (
 					<div>
 						<h2 className="text-2xl font-semibold mb-4">
 							🎥 Pet Video
 						</h2>
 
 						<video
-							src={pet.videos[0]}
+							src={pet.videos?.[0]}
 							className="w-full rounded-2xl shadow-lg"
 							controls
 							playsInline

@@ -25,7 +25,7 @@ const Favorites = () => {
         const data = await getFavorites();
 
         setPets(data);
-      } catch (err) {
+      } catch (err:any) {
         console.log(err);
       } finally {
         setLoading(false);

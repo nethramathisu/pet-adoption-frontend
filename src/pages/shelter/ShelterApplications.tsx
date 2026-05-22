@@ -38,7 +38,7 @@ const ShelterApplications = () => {
 				);
 
 				setApplications(res.data);
-			} catch (err) {
+			}catch(err:any) {
 				console.log(err);
 				toast.error("Failed to load applications");
 			} finally {
@@ -68,7 +68,7 @@ const ShelterApplications = () => {
 			);
 
 			toast.success("Status updated");
-		} catch (err) {
+		}catch(err:any) {
 			console.log(err);
 			toast.error("Failed to update status");
 		}

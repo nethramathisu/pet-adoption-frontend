@@ -28,7 +28,7 @@ const FosterUpdates = () => {
 
 			setPet(petRes.data);
 			setUpdates(updatesRes || []);
-		} catch (err) {
+		}catch(err:any) {
 			console.log(err);
 		} finally {
 			setLoading(false);

@@ -22,7 +22,7 @@ const MyFosterPets = () => {
 				await getMyFosterPets();
 
 			setPets(data);
-		} catch (err) {
+		}catch(err:any) {
 			console.log(err);
 		}
 	};

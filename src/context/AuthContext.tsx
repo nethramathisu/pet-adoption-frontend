@@ -43,7 +43,7 @@ export const AuthProvider = ({
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
-      } catch (err) {
+      } catch (err:any) {
         console.log("Invalid user in localStorage");
         localStorage.removeItem("user");
         setUser(null);

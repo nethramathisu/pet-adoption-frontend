@@ -49,7 +49,7 @@ const Inbox = () => {
           await getMyChats();
 
         setChats(data);
-      } catch (err) {
+      } catch (err:any) {
         console.log(err);
       } finally {
         setLoading(false);

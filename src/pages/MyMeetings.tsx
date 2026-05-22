@@ -26,7 +26,7 @@ const MyMeetings = () => {
     try {
       const res = await API.get("/meetings/user");
       setMeetings(res.data);
-    } catch (err) {
+    } catch (err:any) {
       console.log(err);
     } finally {
       setLoading(false);

@@ -26,7 +26,7 @@ const ShelterReviews = () =>
 
 			setReviews(res.data || []);
 
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log("Review error:", err);
 		}
@@ -48,7 +48,7 @@ const ShelterReviews = () =>
 				)
 			);
 
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log("Average error:", err);
 		}
@@ -80,7 +80,7 @@ const ShelterReviews = () =>
 			fetchReviews();
 			fetchAvg();
 
-		} catch (err)
+		}catch(err:any)
 		{
 			console.log("Submit error:", err);
 		}

@@ -29,7 +29,7 @@ const AddFosterUpdate = () =>
 			setMessage("");
 
 		}
-		catch(err)
+		catch(err:any)
 		{
 			console.log(err);
 		}

@@ -30,7 +30,7 @@ const MyApplications = () => {
             await getMyApplications();
 
           setApplications(data);
-        } catch (err) {
+        } catch (err:any) {
           console.log(err);
         } finally {
           setLoading(false);

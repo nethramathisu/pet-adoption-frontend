@@ -23,7 +23,7 @@ const ShelterMeetings = () => {
     try {
       const res = await API.get("/meetings/shelter");
       setMeetings(res.data);
-    } catch (err) {
+    }catch(err:any) {
       console.log(err);
     }
   };
@@ -36,7 +36,7 @@ const ShelterMeetings = () => {
     try {
       await API.put(`/meetings/${id}`, { status });
       fetchMeetings();
-    } catch (err) {
+    }catch(err:any) {
       console.log(err);
     }
   };
