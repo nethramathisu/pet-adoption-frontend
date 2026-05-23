@@ -23,7 +23,7 @@ const EditPet = () => {
 
 	const fetchPet = async () => {
 		try {
-			const res = await API.get(`/pet/${id}`);
+			const res = await API.get(`/api/pet/${id}`);
 
 			setFormData({
 				name: res.data.name || "",
