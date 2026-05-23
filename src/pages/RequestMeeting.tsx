@@ -18,7 +18,7 @@ const RequestMeeting = () =>
 		try
 		{
 			await API.post(
-				`/meetings/request/${petId}`,
+				`/api/meetings/request/${petId}`,
 				{
 					meetingDate: date,
 					note: message
@@ -29,7 +29,11 @@ const RequestMeeting = () =>
 				"Meeting request sent"
 			);
 
-		}catch(err:any)
+			// Clear fields
+			setDate("");
+			setMessage("");
+
+		} catch (err: any)
 		{
 			console.log(err);
 		}

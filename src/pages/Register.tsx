@@ -1,10 +1,11 @@
 import { useState } from "react";
 import API from "../services/api";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () =>
 {
+	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -29,6 +30,17 @@ const Register = () =>
 		{
 			await API.post("/api/auth/register", formData);
 			toast.success("Registered successfully!");
+
+			// Optional: clear form
+			setFormData({
+				name: "",
+				email: "",
+				password: "",
+				role: "Adopter",
+			});
+
+			// Go to login page
+			navigate("/login");
 		} catch (error: any)
 		{
 			toast.error(error.response?.data?.message);
@@ -87,14 +99,14 @@ const Register = () =>
 
 				</form>
 				<p className="text-center mt-4 text-sm">
-  Already have an account?{" "}
-  <Link
-    to="/login"
-    className="text-blue-600 font-semibold"
-  >
-    Login
-  </Link>
-</p>
+					Already have an account?{" "}
+					<Link
+						to="/login"
+						className="text-blue-600 font-semibold"
+					>
+						Login
+					</Link>
+				</p>
 				<p className="mt-4 text-center text-sm">
 					Back to{" "}
 					<Link to="/" className="text-blue-600 font-semibold">

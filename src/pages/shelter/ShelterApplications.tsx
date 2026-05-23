@@ -34,7 +34,7 @@ const ShelterApplications = () => {
 		const fetchApplications = async () => {
 			try {
 				const res = await API.get(
-					"/applications/shelter"
+					"/api/applications/shelter"
 				);
 
 				setApplications(res.data);

@@ -4,7 +4,7 @@ export const assignFoster = async (
   petId: string,
   fosterId: string
 ) => {
-  const res = await API.post("/foster/assign", {
+  const res = await API.post("/api/foster/assign", {
     petId,
     fosterId,
   });

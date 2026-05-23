@@ -27,7 +27,7 @@ const Profile = () =>
 				{
 					const res =
 						await API.get(
-							"/user/profile"
+							"/api/user/profile"
 						);
 
 					setFormData({
@@ -79,7 +79,7 @@ const Profile = () =>
 			try
 			{
 				await API.put(
-					"/user/profile",
+					"/api/user/profile",
 					{
 						name:
 							formData.name,
@@ -99,6 +99,17 @@ const Profile = () =>
 				toast.success(
 					"Profile updated successfully"
 				);
+
+				// Clear all fields
+				setFormData({
+					name: "",
+					email: "",
+					phone: "",
+					address: "",
+					profilePic: "",
+					password: "",
+					role: "",
+				});
 
 			}
 			catch (err)

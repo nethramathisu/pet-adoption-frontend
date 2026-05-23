@@ -21,7 +21,7 @@ const ShelterReviews = () =>
 			if (!id) return;
 
 			const res = await API.get(
-				`/reviews/${id}`
+				`/api/reviews/${id}`
 			);
 
 			setReviews(res.data || []);
@@ -39,7 +39,7 @@ const ShelterReviews = () =>
 			if (!id) return;
 
 			const res = await API.get(
-				`/reviews/${id}/average`
+				`/api/reviews/${id}/average`
 			);
 
 			setAvg(
@@ -67,7 +67,7 @@ const ShelterReviews = () =>
 			if (!id) return;
 
 			await API.post(
-				`/reviews/${id}`,
+				`/api/reviews/${id}`,
 				{
 					rating,
 					comment,

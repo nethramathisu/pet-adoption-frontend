@@ -32,14 +32,18 @@ const Home = () =>
 	{
 		try
 		{
+			setLoading(true);
+
 			const query = new URLSearchParams(filters as any).toString();
 
 			const data = await getPets(query);
 
 			setPets(data.pets || data);
-		} catch (err:any)
+
+		} catch (err: any)
 		{
-			console.log(err);
+			console.log("Fetch pets error:", err);
+
 		} finally
 		{
 			setLoading(false);

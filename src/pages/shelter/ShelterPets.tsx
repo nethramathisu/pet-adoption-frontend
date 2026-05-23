@@ -28,7 +28,7 @@ const ShelterPets = () =>
 	{
 		try
 		{
-			const res = await API.get("/pet");
+			const res = await API.get("/api/pet");
 
 			setPets(res.data?.pets || res.data || []);
 		}catch(err:any)

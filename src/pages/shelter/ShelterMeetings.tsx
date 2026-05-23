@@ -21,7 +21,7 @@ const ShelterMeetings = () => {
 
   const fetchMeetings = async () => {
     try {
-      const res = await API.get("/meetings/shelter");
+      const res = await API.get("/api/meetings/shelter");
       setMeetings(res.data);
     }catch(err:any) {
       console.log(err);
@@ -34,7 +34,7 @@ const ShelterMeetings = () => {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      await API.put(`/meetings/${id}`, { status });
+      await API.put(`/api/meetings/${id}`, { status });
       fetchMeetings();
     }catch(err:any) {
       console.log(err);
