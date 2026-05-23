@@ -15,13 +15,13 @@ const PetReviews = () => {
 
   const fetchReviews = async () => {
     if (!petId) return;
-    const res = await API.get(`/reviews/pet/${petId}`);
+    const res = await API.get(`/api/reviews/pet/${petId}`);
     setReviews(res.data);
   };
 
   const fetchAvg = async () => {
     if (!petId) return;
-    const res = await API.get(`/reviews/pet/${petId}/average`);
+    const res = await API.get(`/api/reviews/pet/${petId}/average`);
     setAvg(res.data.average);
   };
 
@@ -33,7 +33,7 @@ const PetReviews = () => {
   const submitReview = async () => {
     if (!petId) return;
 
-    await API.post(`/reviews/pet/${petId}`, {
+    await API.post(`/api/reviews/pet/${petId}`, {
       rating,
       comment,
     });

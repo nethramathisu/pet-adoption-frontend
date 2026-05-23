@@ -64,7 +64,7 @@ const ShelterPets = () =>
 			const confirmDelete = window.confirm("Delete this pet?");
 			if (!confirmDelete) return;
 
-			await API.delete(`/pet/${petId}`);
+			await API.delete(`/api/pet/${petId}`);
 
 			toast.success("Pet deleted successfully");
 

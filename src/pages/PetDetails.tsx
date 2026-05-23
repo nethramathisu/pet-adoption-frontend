@@ -66,7 +66,7 @@ const PetDetails = () =>
 			try
 			{
 				const res = await API.get(
-					`/pet/${id}`
+					`/api/pet/${id}`
 				);
 
 				setPet(res.data);

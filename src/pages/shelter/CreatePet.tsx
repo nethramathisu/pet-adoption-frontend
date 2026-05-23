@@ -106,7 +106,7 @@ const CreatePet = () => {
 			);
 
 			const res = await API.post(
-				"/pet",
+				"/api/pet",
 				data
 			);
 

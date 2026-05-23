@@ -57,7 +57,7 @@ const EditPet = () => {
 
 		try {
 			await API.put(
-				`/pet/${id}`,
+				`/api/pet/${id}`,
 				formData
 			);
 

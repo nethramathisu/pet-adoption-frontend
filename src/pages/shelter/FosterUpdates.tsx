@@ -22,7 +22,7 @@ const FosterUpdates = () => {
 
 			// fetch both: pet + updates
 			const [petRes, updatesRes] = await Promise.all([
-				API.get(`/pet/${petId}`),
+				API.get(`/api/pet/${petId}`),
 				getFosterUpdates(petId),
 			]);
 
