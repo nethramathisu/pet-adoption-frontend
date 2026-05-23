@@ -15,7 +15,7 @@ export const assignFoster = async (
 export const getMyFosterPets =
   async () => {
     const res = await API.get(
-      "/foster/myfosterPets"
+      "/api/foster/myfosterPets"
     );
 
     return res.data;
@@ -24,7 +24,7 @@ export const getMyFosterPets =
 export const removeFoster =
   async (petId: string) => {
     const res = await API.delete(
-      `/foster/remove/${petId}`
+      `/api/foster/remove/${petId}`
     );
 
     return res.data;
@@ -36,7 +36,7 @@ export const addFosterUpdate =
     message: string
   ) => {
     const res = await API.post(
-      `/foster/update/${petId}`,
+      `/api/foster/update/${petId}`,
       { message }
     );
 
@@ -46,7 +46,7 @@ export const addFosterUpdate =
 export const getFosterUpdates =
   async (petId: string) => {
     const res = await API.get(
-      `/foster/updates/${petId}`
+      `/api/foster/updates/${petId}`
     );
 
     return res.data;
@@ -54,6 +54,6 @@ export const getFosterUpdates =
 
 
   export const getAllFosters = async () => {
-    const res = await API.get("/foster");
+    const res = await API.get("/api/foster");
     return res.data;
 };

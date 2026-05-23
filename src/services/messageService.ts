@@ -8,7 +8,7 @@ export const sendMessage = async (
 ) => {
 
     const res = await API.post(
-        "/messages",
+        "/api/messages",
         {
             receiver: receiverId, // changed here
             petId,
@@ -25,7 +25,7 @@ export const getChats = async (
   petId: string
 ) => {
   const res = await API.get(
-    `/messages/${userId}/${petId}`
+    `/api/messages/${userId}/${petId}`
   );
 
   return res.data;
@@ -34,7 +34,7 @@ export const getChats = async (
 // GET MY INBOX
 export const getMyChats = async () => {
   const res = await API.get(
-    "/messages"
+    "/api/messages"
   );
 
   return res.data;
@@ -46,7 +46,7 @@ export const markAsRead = async (
   petId: string
 ) => {
   const res = await API.put(
-    `/messages/read/${userId}/${petId}`
+    `/api/messages/read/${userId}/${petId}`
   );
 
   return res.data;

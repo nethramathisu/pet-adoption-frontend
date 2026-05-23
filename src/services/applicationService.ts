@@ -6,7 +6,7 @@ export const applyForPet = async (
   message: string
 ) => {
   const res = await API.post(
-    `/applications/${petId}`,
+    `/api/applications/${petId}`,
     { message }
   );
 
@@ -16,7 +16,7 @@ export const applyForPet = async (
 // USER APPLICATIONS
 export const getMyApplications = async () => {
   const res = await API.get(
-    "/applications/my"
+    "/api/applications/my"
   );
 
   return res.data;
@@ -26,7 +26,7 @@ export const getMyApplications = async () => {
 export const getShelterApplications =
   async () => {
     const res = await API.get(
-      "/applications/shelter"
+      "/api/applications/shelter"
     );
 
     return res.data;
@@ -40,7 +40,7 @@ export const updateApplicationStatus =
     responseMessage?: string
   ) => {
     const res = await API.put(
-      `/applications/${appId}`,
+      `api/applications/${appId}`,
       {
         status,
         responseMessage,
