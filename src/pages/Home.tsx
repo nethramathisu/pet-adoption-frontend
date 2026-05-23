@@ -34,7 +34,10 @@ const Home = () =>
 		{
 			setLoading(true);
 
-			const query = new URLSearchParams(filters as any).toString();
+			const query = new URLSearchParams(
+				Object.entries(filters)
+					.filter(([_, value]) => String(value).trim() !== "")
+			).toString();
 
 			const data = await getPets(query);
 
@@ -61,17 +64,16 @@ const Home = () =>
 	};
 	useEffect(() =>
 	{
-		fetchPets();
+		const timer = setTimeout(() =>
+		{
+			fetchPets();
+		}, 500);
+
+		return () => clearTimeout(timer);
+
 	}, [filters]);
 
-	if (loading)
-	{
-		return (
-			<div className="text-center mt-10 text-gray-500">
-				Loading pets... 🐾
-			</div>
-		);
-	}
+
 
 	return (
 		<div className="py-6">
@@ -82,11 +84,13 @@ const Home = () =>
 			</h1>
 
 			{/* FILTERS */}
+			{/* FILTERS */}
 			<div className="bg-white p-4 rounded-xl shadow mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
 
 				<input
 					type="text"
 					placeholder="Search pets..."
+					value={filters.search}
 					className="border p-2 rounded-lg"
 					onChange={(e) =>
 						setFilters({
@@ -99,6 +103,7 @@ const Home = () =>
 				<input
 					type="text"
 					placeholder="Breed"
+					value={filters.breed}
 					className="border p-2 rounded-lg"
 					onChange={(e) =>
 						setFilters({
@@ -109,6 +114,7 @@ const Home = () =>
 				/>
 
 				<select
+					value={filters.size}
 					className="border p-2 rounded-lg"
 					onChange={(e) =>
 						setFilters({
@@ -126,6 +132,7 @@ const Home = () =>
 				<input
 					type="number"
 					placeholder="Max Age"
+					value={filters.age}
 					className="border p-2 rounded-lg"
 					onChange={(e) =>
 						setFilters({
@@ -137,66 +144,75 @@ const Home = () =>
 			</div>
 
 			{/* PET GRID */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+			{/* PET GRID */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
 
-				{pets.map((pet) => (
-					<div
-						key={pet._id}
-						className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden"
-					>
+				{loading && (
+					<div className="col-span-full text-center text-gray-500 py-10 min-h-[100px]">
+						Loading pets... 🐾
+					</div>
+				)}
 
-						{/* IMAGE */}
-						<img
-							src={
-								pet.images?.[0] ||
-								"https://via.placeholder.com/300"
-							}
-							className="h-48 w-full object-cover"
-						/>
+				{!loading &&
+					pets.map((pet) => (
+						<div
+							key={pet._id}
+							className="bg-white rounded-2xl shadow-md hover:shadow-xl transition overflow-hidden w-full"
+						>
 
-						{/* CONTENT */}
-						<div className="p-4 space-y-2">
+							{/* IMAGE */}
+							<img
+								src={
+									pet.images?.[0] ||
+									"https://via.placeholder.com/300"
+								}
+								className="h-48 w-full object-cover"
+							/>
 
-							<h2 className="text-xl font-semibold">
-								{pet.name}
-							</h2>
+							{/* CONTENT */}
+							<div className="p-4 space-y-2">
 
-							<p className="text-gray-600">
-								{pet.breed}
-							</p>
+								<h2 className="text-xl font-semibold">
+									{pet.name}
+								</h2>
 
-							<div className="text-sm text-gray-500">
-								Age: {pet.age} yrs | Size: {pet.size}
-							</div>
+								<p className="text-gray-600">
+									{pet.breed}
+								</p>
 
-							<div className="text-sm text-gray-400">
-								📍 {pet.location}
-							</div>
+								<div className="text-sm text-gray-500">
+									Age: {pet.age} yrs | Size: {pet.size}
+								</div>
 
-							{/* BUTTONS */}
-							<div className="flex gap-2 mt-3">
+								<div className="text-sm text-gray-400">
+									📍 {pet.location}
+								</div>
 
-								<button
-									onClick={() => handleProtectedNavigation(`/pet/${pet._id}`)}
-									className="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700"
-								>
-									View
-								</button>
+								{/* BUTTONS */}
+								<div className="flex gap-2 mt-3">
 
-								<button
-									onClick={() =>
-										handleProtectedNavigation(`/pet/${pet._id}`)
-									}
-									className="flex-1 bg-pink-500 text-white py-3 rounded-xl hover:bg-pink-600 transition"
-								>
-									Adopt
-								</button>
+									<button
+										onClick={() => handleProtectedNavigation(`/pet/${pet._id}`)}
+										className="flex-1 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700"
+									>
+										View
+									</button>
+
+									<button
+										onClick={() =>
+											handleProtectedNavigation(`/pet/${pet._id}`)
+										}
+										className="flex-1 bg-pink-500 text-white py-3 rounded-xl hover:bg-pink-600 transition"
+									>
+										Adopt
+									</button>
+
+								</div>
+
 							</div>
 
 						</div>
-
-					</div>
-				))}
+					))}
 
 			</div>
 		</div>
