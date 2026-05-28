@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+# Pet Adoption Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack pet adoption website where users can browse pets and apply for adoption online.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* User login and registration
+* Browse available pets
+* View pet details
+* Apply for pet adoption
+* Foster pets temporarily
+* Shelter can add, edit, and remove pets
+* Shelter can manage adoption and foster requests
 
-## React Compiler
+## User Roles
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Adopter
 
-## Expanding the ESLint configuration
+* Browse pets
+* Apply for adoption
+* Track application status
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Foster
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* Apply to foster pets temporarily
+* Manage foster requests
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Shelter
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+* Add new pets
+* Update pet details
+* Remove pets
+* Manage adoption applications
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Frontend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+* React
+* Tailwind css
+* TypeScript
+* React Router
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* JWT Authentication
+
+
+## Deployment
+
+* Frontend: Netlify
+* Backend: Render
+* Database: MongoDB Atlas
+
+## Author
+
+Nethra
+
+
+## credentials
+
+## shelter login
+## username:nethra.gmr@gmail.com
+## PWD:123456789
+
+
+## foster login
+## username:foster@gmail.com
+## PWD:12345678
+
+## Adopter login
+## username:leela@gmail.com
+## PWD:12345678
