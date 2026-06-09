@@ -64,7 +64,13 @@ const ShelterApplications = () =>
 
     console.log("UPDATED IN BACKEND");
 
-    await fetchApplications(); 
+    setApplications((prev) =>
+      prev.map((app) =>
+        app._id === id
+          ? { ...app, status }
+          : app
+      )
+    );
 
     toast.success("Status updated");
   } catch (err) {
