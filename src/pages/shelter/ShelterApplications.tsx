@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import toast from "react-hot-toast";
 
-interface Application {
+interface Application
+{
 	_id: string;
 	status: string;
 	message: string;
@@ -21,7 +22,8 @@ interface Application {
 	} | null; // ✅ important fix
 }
 
-const ShelterApplications = () => {
+const ShelterApplications = () =>
+{
 	const navigate = useNavigate();
 
 	const [applications, setApplications] =
@@ -29,52 +31,50 @@ const ShelterApplications = () => {
 
 	const [loading, setLoading] =
 		useState(true);
-
-	useEffect(() => {
-		const fetchApplications = async () => {
-			try {
-				const res = await API.get(
-					"/api/applications/shelter"
-				);
-
-				setApplications(res.data);
-			}catch(err:any) {
-				console.log(err);
-				toast.error("Failed to load applications");
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchApplications();
-	}, []);
-
-	const updateStatus = async (
-		id: string,
-		status: string
-	) => {
-		try {
-			await API.put(
-				`/api/applications/${id}`,
-				{ status }
+	const fetchApplications = async () =>
+	{
+		try
+		{
+			const res = await API.get(
+				"/api/applications/shelter"
 			);
 
-			setApplications((prev) =>
-				prev.map((app) =>
-					app._id === id
-						? { ...app, status }
-						: app
-				)
-			);
-
-			toast.success("Status updated");
-		}catch(err:any) {
+			console.log("FETCH RUN:", new Date().toLocaleTimeString());
+			setApplications(res.data);
+		} catch (err: any)
+		{
 			console.log(err);
-			toast.error("Failed to update status");
+			toast.error("Failed to load applications");
+		} finally
+		{
+			setLoading(false);
 		}
 	};
 
-	if (loading) {
+	useEffect(() =>
+	{
+
+		fetchApplications();
+	}, []);
+	const updateStatus = async (id: string, status: string) => {
+  console.log("BUTTON CLICKED", id, status);
+
+  try {
+    await API.put(`/api/applications/${id}`, { status });
+
+    console.log("UPDATED IN BACKEND");
+
+    await fetchApplications(); 
+
+    toast.success("Status updated");
+  } catch (err) {
+    console.log(err);
+    toast.error("Failed to update status");
+  }
+};
+
+	if (loading)
+	{
 		return (
 			<div className="text-center mt-10">
 				Loading applications...
@@ -139,16 +139,15 @@ const ShelterApplications = () => {
 								<div className="mt-3">
 									<span
 										className={`px-3 py-1 rounded-full text-sm font-semibold
-										${
-											app.status === "approved"
+										${app.status === "approved"
 												? "bg-green-100 text-green-700"
 												: app.status === "rejected"
-												? "bg-red-100 text-red-700"
-												: app.status ===
-												  "request_more_info"
-												? "bg-yellow-100 text-yellow-700"
-												: "bg-gray-100 text-gray-700"
-										}`}
+													? "bg-red-100 text-red-700"
+													: app.status ===
+														"request_more_info"
+														? "bg-yellow-100 text-yellow-700"
+														: "bg-gray-100 text-gray-700"
+											}`}
 									>
 										{app.status}
 									</span>
@@ -194,8 +193,10 @@ const ShelterApplications = () => {
 									</button>
 
 									<button
-										onClick={() => {
-											if (!app.pet?._id) {
+										onClick={() =>
+										{
+											if (!app.pet?._id)
+											{
 												toast.error(
 													"Pet no longer exists"
 												);
