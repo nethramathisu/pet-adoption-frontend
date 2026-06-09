@@ -40,7 +40,7 @@ export const updateApplicationStatus =
     responseMessage?: string
   ) => {
     const res = await API.put(
-      `api/applications/${appId}`,
+      `/api/applications/${appId}`,
       {
         status,
         responseMessage,

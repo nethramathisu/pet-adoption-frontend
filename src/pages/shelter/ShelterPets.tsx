@@ -12,6 +12,7 @@ interface Pet
 	breed: string;
 	status: string;
 	images: string[];
+	fosteredBy?: string | null;
 }
 
 const ShelterPets = () =>
@@ -31,7 +32,7 @@ const ShelterPets = () =>
 			const res = await API.get("/api/pet");
 
 			setPets(res.data?.pets || res.data || []);
-		}catch(err:any)
+		} catch (err: any)
 		{
 			console.log(err);
 			setPets([]);
@@ -90,7 +91,7 @@ const ShelterPets = () =>
 			toast.success("Foster removed");
 
 			fetchPets();
-		}catch(err:any)
+		} catch (err: any)
 		{
 			console.log(err);
 		}
@@ -159,17 +160,17 @@ const ShelterPets = () =>
 									onClick={() => openModal(pet._id)}
 									className="bg-blue-600 text-white py-2 rounded"
 								>
-									Assign Foster
+									{pet.fosteredBy ? "Change Foster" : "Assign Foster"}
 								</button>
 
-								<button
-									onClick={() =>
-										handleRemoveFoster(pet._id)
-									}
-									className="bg-red-500 text-white py-2 rounded"
-								>
-									Remove Foster
-								</button>
+								{pet.fosteredBy && (
+									<button
+										onClick={() => handleRemoveFoster(pet._id)}
+										className="bg-red-500 text-white py-2 rounded"
+									>
+										Remove Foster
+									</button>
+								)}
 
 								<button
 									onClick={() =>

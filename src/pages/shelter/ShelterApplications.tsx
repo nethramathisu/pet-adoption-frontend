@@ -55,7 +55,7 @@ const ShelterApplications = () => {
 	) => {
 		try {
 			await API.put(
-				`/applications/${id}`,
+				`/api/applications/${id}`,
 				{ status }
 			);
 
