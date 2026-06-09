@@ -32,10 +32,13 @@ import AddFosterUpdate from "./pages/foster/AddFosterUpdate";
 import FosterUpdates from "./pages/shelter/FosterUpdates";
 
 import Profile from "./pages/Profile";
+import AuthRedirect from "./AuthRedirect";
 
-function App() {
+function App()
+{
 	return (
 		<BrowserRouter>
+			<AuthRedirect />
 			<Routes>
 
 				{/* ================= PUBLIC ROUTES ================= */}

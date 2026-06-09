@@ -56,28 +56,30 @@ const ShelterApplications = () =>
 
 		fetchApplications();
 	}, []);
-	const updateStatus = async (id: string, status: string) => {
-  console.log("BUTTON CLICKED", id, status);
 
-  try {
-    await API.put(`/api/applications/${id}`, { status });
 
-    console.log("UPDATED IN BACKEND");
+	const updateStatus = async (id: string, status: string) =>
+	{
+		try
+		{
+			console.log("CLICKED:", id, status);
 
-    setApplications((prev) =>
-      prev.map((app) =>
-        app._id === id
-          ? { ...app, status }
-          : app
-      )
-    );
+			const res = await API.put(`/api/applications/${id}`, { status });
 
-    toast.success("Status updated");
-  } catch (err) {
-    console.log(err);
-    toast.error("Failed to update status");
-  }
-};
+			console.log("PUT RESPONSE:", res.data);
+
+			const updated = await API.get("/api/applications/shelter");
+
+			console.log("GET AFTER UPDATE:", updated.data);
+
+			setApplications(updated.data);
+
+			toast.success("Updated");
+		} catch (err)
+		{
+			console.log("ERROR:", err);
+		}
+	};
 
 	if (loading)
 	{
@@ -97,7 +99,7 @@ const ShelterApplications = () =>
 			<div className="space-y-6">
 
 				{applications
-					.filter((app) => app.pet) // ✅ remove broken data
+					.filter((app) => app.pet)
 					.map((app) => (
 						<div
 							key={app._id}
