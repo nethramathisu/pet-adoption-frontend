@@ -162,60 +162,50 @@ const ShelterApplications = () =>
 								</div>
 
 								{/* ACTIONS */}
-								<div className="mt-4 flex gap-3 flex-wrap">
+								{/* ACTIONS */}
+								<div className="mt-4 flex flex-col gap-3">
 
-									<button
-										onClick={() =>
-											updateStatus(
-												app._id,
-												"approved"
-											)
-										}
-										className="bg-green-600 text-white px-4 py-2 rounded-xl"
-									>
-										Approve
-									</button>
+									{/* Status-based actions */}
+									{app.status === "pending" && (
+										<div className="flex gap-3 flex-wrap">
+											<button
+												onClick={() => updateStatus(app._id, "approved")}
+												className="bg-green-600 text-white px-4 py-2 rounded-xl"
+											>
+												Approve
+											</button>
 
-									<button
-										onClick={() =>
-											updateStatus(
-												app._id,
-												"rejected"
-											)
-										}
-										className="bg-red-600 text-white px-4 py-2 rounded-xl"
-									>
-										Reject
-									</button>
+											<button
+												onClick={() => updateStatus(app._id, "rejected")}
+												className="bg-red-600 text-white px-4 py-2 rounded-xl"
+											>
+												Reject
+											</button>
 
-									<button
-										onClick={() =>
-											updateStatus(
-												app._id,
-												"request_more_info"
-											)
-										}
-										className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
-									>
-										Request Info
-									</button>
+											<button
+												onClick={() =>
+													updateStatus(app._id, "request_more_info")
+												}
+												className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+											>
+												Request Info
+											</button>
+										</div>
+									)}
 
+									{/* Message button ALWAYS aligned */}
 									<button
 										onClick={() =>
 										{
 											if (!app.pet?._id)
 											{
-												toast.error(
-													"Pet no longer exists"
-												);
+												toast.error("Pet no longer exists");
 												return;
 											}
 
-											navigate(
-												`/app/chat/${app.user._id}/${app.pet._id}`
-											);
+											navigate(`/app/chat/${app.user._id}/${app.pet._id}`);
 										}}
-										className="bg-purple-600 text-white px-4 py-2 rounded-xl"
+										className="bg-purple-600 text-white px-4 py-2 rounded-xl w-fit"
 									>
 										💬 Message
 									</button>

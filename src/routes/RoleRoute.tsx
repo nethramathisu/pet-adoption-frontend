@@ -8,7 +8,16 @@ const RoleRoute = ({
   children: React.ReactNode;
   allowedRoles: string[];
 }) => {
-  const { user, token } = useAuth();
+  const { user, token, loading } = useAuth(); 
+
+  // Wait until auth is loaded from localStorage
+  if (loading) {
+    return (
+      <div className="text-center mt-10 text-gray-500">
+        Loading...
+      </div>
+    );
+  }
 
   if (!token || !user) {
     return <Navigate to="/login" replace />;

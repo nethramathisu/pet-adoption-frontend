@@ -61,6 +61,8 @@ const Inbox = () =>
 	const conversations = Object.values(
 		chats.reduce((acc: Record<string, Chat>, chat) =>
 		{
+			 // Skip messages where pet or sender/receiver is null
+        if (!chat.pet || !chat.sender || !chat.receiver) return acc;
 			const otherUser =
 				chat.sender._id === user?._id
 					? chat.receiver
