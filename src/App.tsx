@@ -34,6 +34,8 @@ import FosterUpdates from "./pages/shelter/FosterUpdates";
 import Profile from "./pages/Profile";
 import AuthRedirect from "./AuthRedirect";
 
+// health ping removed — now handled in services/api.ts
+
 function App()
 {
 	return (

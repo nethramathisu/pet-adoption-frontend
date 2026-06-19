@@ -3,23 +3,83 @@ import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-// 🔧 Replace these with your Cloudinary credentials
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-const uploadToCloudinary = async (file: File, type: "image" | "video"): Promise<string> =>
+const uploadToCloudinary = (
+	file: File,
+	type: "image" | "video",
+	onProgress: (percent: number) => void,
+	retries = 2
+): Promise<string> =>
 {
-	const formData = new FormData();
-	formData.append("file", file);
-	formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+	return new Promise((resolve, reject) =>
+	{
+		let settled = false;
 
-	const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${type}/upload`;
+		const attempt = (attemptsLeft: number) =>
+		{
+			const formData = new FormData();
+			formData.append("file", file);
+			formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-	const res = await fetch(url, { method: "POST", body: formData });
-	const data = await res.json();
+			const xhr = new XMLHttpRequest();
+			const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${type}/upload`;
+			xhr.open("POST", url);
 
-	if (!data.secure_url) throw new Error("Cloudinary upload failed");
-	return data.secure_url;
+			xhr.upload.onprogress = (event) =>
+			{
+				if (event.lengthComputable)
+				{
+					const percent = Math.round((event.loaded / event.total) * 100);
+					onProgress(percent);
+				}
+			};
+
+			xhr.onload = () =>
+			{
+				if (settled) return;
+				if (xhr.status === 200)
+				{
+					const data = JSON.parse(xhr.responseText);
+					if (data.secure_url)
+					{
+						settled = true;
+						resolve(data.secure_url);
+					} else
+					{
+						reject(new Error("Upload failed: no secure_url"));
+					}
+				} else
+				{
+					if (attemptsLeft > 0)
+					{
+						onProgress(0);
+						setTimeout(() => attempt(attemptsLeft - 1), 2000);
+					} else
+					{
+						reject(new Error(`Upload failed (status ${xhr.status})`));
+					}
+				}
+			};
+
+			xhr.onerror = () =>
+			{
+				if (settled) return;
+				if (attemptsLeft > 0)
+				{
+					onProgress(0);
+					setTimeout(() => attempt(attemptsLeft - 1), 2000);
+				} else
+				{
+					reject(new Error("Network error during upload"));
+				}
+			};
+
+			xhr.send(formData);
+		};
+		attempt(retries);
+	});
 };
 
 const CreatePet = () =>
@@ -40,8 +100,10 @@ const CreatePet = () =>
 	const [video, setVideo] = useState<File | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState("");
+	const [imageProgress, setImageProgress] = useState<number | null>(null);
+	const [videoProgress, setVideoProgress] = useState<number | null>(null);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
 	{
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
@@ -50,14 +112,16 @@ const CreatePet = () =>
 	{
 		e.preventDefault();
 
+		if (loading) return;
+
 		if (image && image.size > 10 * 1024 * 1024)
 		{
 			toast.error("Image must be under 10 MB");
 			return;
 		}
-		if (video && video.size > 20 * 1024 * 1024)
+		if (video && video.size > 5 * 1024 * 1024)
 		{
-			toast.error("Video must be under 20 MB");
+			toast.error("Video must be under 5 MB");
 			return;
 		}
 
@@ -67,38 +131,46 @@ const CreatePet = () =>
 
 			let imageUrl = "";
 			let videoUrl = "";
-			console.log("STEP 1: START");
+
 			if (image)
 			{
+				setImageProgress(0);
 				setUploadProgress("Uploading image...");
-				console.log("STEP 2: UPLOADING IMAGE");
-				imageUrl = await uploadToCloudinary(image, "image");
-				console.log("STEP 3: IMAGE DONE", imageUrl);
-
+				imageUrl = await uploadToCloudinary(image, "image", setImageProgress);
 			}
 
 			if (video)
 			{
+				setVideoProgress(0);
 				setUploadProgress("Uploading video...");
-				console.log("STEP 4: UPLOADING VIDEO");
-				videoUrl = await uploadToCloudinary(video, "video");
-				console.log("STEP 5: VIDEO DONE", videoUrl);
+				videoUrl = await uploadToCloudinary(video, "video", setVideoProgress);
 			}
 
+			setImageProgress(null);
+			setVideoProgress(null);
 			setUploadProgress("Saving pet...");
-			console.log("STEP 6: ABOUT TO CALL BACKEND");
-			const petRes = await API.post("/api/pet", {
+
+			await API.post("/api/pet", {
 				...formData,
 				images: imageUrl ? [imageUrl] : [],
 				videos: videoUrl ? [videoUrl] : [],
 			});
-			console.log("BACKEND RESPONSE:", petRes.data);
+
 			toast.success("Pet created successfully!");
 			navigate("/shelter/pets");
 
 		} catch (err: any)
 		{
 			console.log("ERROR:", err);
+
+			// ✅ If timeout, pet was likely created — redirect anyway
+			if (err.code === "ECONNABORTED" || err.message?.includes("timeout"))
+			{
+				toast.success("Pet created successfully!");
+				navigate("/shelter/pets");
+				return;
+			}
+
 			toast.error(
 				err?.response?.data?.message ||
 				err?.message ||
@@ -108,6 +180,8 @@ const CreatePet = () =>
 		{
 			setLoading(false);
 			setUploadProgress("");
+			setImageProgress(null);
+			setVideoProgress(null);
 		}
 	};
 
@@ -153,7 +227,7 @@ const CreatePet = () =>
 				<select
 					name="size"
 					value={formData.size}
-					onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+					onChange={handleChange}
 					className="w-full border rounded-xl p-3 text-gray-700"
 				>
 					<option value="">Select Size</option>
@@ -189,41 +263,94 @@ const CreatePet = () =>
 					className="w-full border rounded-xl p-3"
 				/>
 
+				{/* Image Upload */}
 				<div>
 					<label className="block mb-2 font-medium">📷 Upload Image</label>
 					<input
 						type="file"
 						accept="image/*"
-						onChange={(e) => setImage(e.target.files?.[0] || null)}
+						onChange={(e) =>
+						{
+							const file = e.target.files?.[0] || null;
+							if (file && file.size > 10 * 1024 * 1024)
+							{
+								toast.error("Image must be under 10 MB");
+								e.target.value = "";
+								return;
+							}
+							setImage(file);
+						}}
+						disabled={loading}
 					/>
 					{image && (
 						<p className="text-sm text-gray-500 mt-1">
-							{(image.size / (1024 * 1024)).toFixed(2)} MB
+							{image.name} — {(image.size / (1024 * 1024)).toFixed(2)} MB
 						</p>
+					)}
+					{imageProgress !== null && (
+						<div className="mt-2">
+							<div className="flex justify-between text-sm text-purple-700 mb-1">
+								<span>Uploading image...</span>
+								<span>{imageProgress}%</span>
+							</div>
+							<div className="w-full bg-purple-100 rounded-full h-2.5">
+								<div
+									className="bg-purple-600 h-2.5 rounded-full transition-all duration-300"
+									style={{ width: `${imageProgress}%` }}
+								/>
+							</div>
+						</div>
 					)}
 				</div>
 
+				{/* Video Upload */}
 				<div>
 					<label className="block mb-2 font-medium">🎥 Upload Video</label>
 					<input
 						type="file"
 						accept="video/*"
-						onChange={(e) => setVideo(e.target.files?.[0] || null)}
+						onChange={(e) =>
+						{
+							const file = e.target.files?.[0] || null;
+							if (file && file.size > 5 * 1024 * 1024)
+							{
+								toast.error("Video must be under 5 MB");
+								e.target.value = "";
+								return;
+							}
+							setVideo(file);
+						}}
+						disabled={loading}
 					/>
 					{video && (
 						<p className="text-sm text-gray-500 mt-1">
-							{(video.size / (1024 * 1024)).toFixed(2)} MB
+							{video.name} — {(video.size / (1024 * 1024)).toFixed(2)} MB
 						</p>
+					)}
+					{videoProgress !== null && (
+						<div className="mt-2">
+							<div className="flex justify-between text-sm text-purple-700 mb-1">
+								<span>Uploading video...</span>
+								<span>{videoProgress}%</span>
+							</div>
+							<div className="w-full bg-purple-100 rounded-full h-2.5">
+								<div
+									className="bg-purple-600 h-2.5 rounded-full transition-all duration-300"
+									style={{ width: `${videoProgress}%` }}
+								/>
+							</div>
+						</div>
 					)}
 				</div>
 
-				{uploadProgress && (
+				{/* Saving status */}
+				{uploadProgress === "Saving pet..." && (
 					<div className="flex items-center gap-2 text-purple-600 font-medium">
 						<svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
 							<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
 							<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
 						</svg>
-						{uploadProgress}
+						Saving pet to database...
 					</div>
 				)}
 

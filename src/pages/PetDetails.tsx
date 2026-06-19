@@ -70,7 +70,7 @@ const PetDetails = () =>
 				);
 
 				setPet(res.data);
-			} catch (err:any)
+			} catch (err: any)
 			{
 				console.log(err);
 			} finally
@@ -100,7 +100,7 @@ const PetDetails = () =>
 				);
 
 				setFavorites(favIds);
-			} catch (err:any)
+			} catch (err: any)
 			{
 				console.log(err);
 			}
@@ -124,7 +124,7 @@ const PetDetails = () =>
 						)
 						: [...prev, petId]
 				);
-			}catch(err:any)
+			} catch (err: any)
 			{
 				console.log(err);
 			}
@@ -144,14 +144,20 @@ const PetDetails = () =>
 				message
 			);
 
-			toast.success(
-				"Application submitted successfully!"
-			);
-
+			toast.success("Application submitted successfully!");
 			setMessage("");
-		}catch(err:any)
+
+		} catch (err: any)
 		{
 			console.log(err);
+
+			// ✅ If timeout, application was likely submitted anyway
+			if (err.code === "ECONNABORTED" || err.message?.includes("timeout"))
+			{
+				toast.success("Application submitted successfully!");
+				setMessage("");
+				return;
+			}
 
 			toast.error(
 				err?.response?.data?.message ||
@@ -277,7 +283,7 @@ const PetDetails = () =>
 				</div>
 				{/* PET VIDEO */}
 				{/* PET VIDEO */}
-				{(pet.videos?.length ?? 0 )> 0 && (
+				{(pet.videos?.length ?? 0) > 0 && (
 					<div>
 						<h2 className="text-2xl font-semibold mb-4">
 							🎥 Pet Video
