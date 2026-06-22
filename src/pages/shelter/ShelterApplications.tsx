@@ -9,6 +9,11 @@ interface Application
 	status: string;
 	message: string;
 
+	infoRequest?: string;
+	houseType?: string;
+	existingPets?: string;
+	contactNumber?: string;
+	address?: string;
 	user: {
 		_id: string;
 		name: string;
@@ -19,15 +24,20 @@ interface Application
 		_id: string;
 		name: string;
 		images: string[];
-	} | null; // ✅ important fix
+	} | null;
 }
 
 const ShelterApplications = () =>
 {
+
 	const navigate = useNavigate();
 
 	const [applications, setApplications] =
 		useState<Application[]>([]);
+
+	const [selectedApplication, setSelectedApplication] =
+		useState<string | null>(null);
+
 
 	const [loading, setLoading] =
 		useState(true);
@@ -80,7 +90,32 @@ const ShelterApplications = () =>
 			console.log("ERROR:", err);
 		}
 	};
+	const handleRequestInfo = async (
+		applicationId: string,
+		message: string
+	) =>
+	{
+		try
+		{
+			await API.put(
+				`/api/applications/${applicationId}/request-info`,
+				{ message }
+			);
 
+			toast.success(
+				"Information requested successfully"
+			);
+
+			fetchApplications();
+		}
+		catch (error: any)
+		{
+			toast.error(
+				error.response?.data?.message ||
+				"Failed"
+			);
+		}
+	};
 	if (loading)
 	{
 		return (
@@ -147,14 +182,15 @@ const ShelterApplications = () =>
 								<div className="mt-3">
 									<span
 										className={`px-3 py-1 rounded-full text-sm font-semibold
-										${app.status === "approved"
+										${app.status === "Approved"
 												? "bg-green-100 text-green-700"
-												: app.status === "rejected"
+												: app.status === "Rejected"
 													? "bg-red-100 text-red-700"
-													: app.status ===
-														"request_more_info"
+													: app.status === "Info Requested"
 														? "bg-yellow-100 text-yellow-700"
-														: "bg-gray-100 text-gray-700"
+														: app.status === "Info Submitted"
+															? "bg-blue-100 text-blue-700"
+															: "bg-gray-100 text-gray-700"
 											}`}
 									>
 										{app.status}
@@ -166,32 +202,34 @@ const ShelterApplications = () =>
 								<div className="mt-4 flex flex-col gap-3">
 
 									{/* Status-based actions */}
-									{app.status === "pending" && (
-										<div className="flex gap-3 flex-wrap">
-											<button
-												onClick={() => updateStatus(app._id, "approved")}
-												className="bg-green-600 text-white px-4 py-2 rounded-xl"
-											>
-												Approve
-											</button>
+									{(app.status === "Pending" ||
+										app.status === "Info Submitted") && (
+											<div className="flex gap-3 flex-wrap">
+												<button
+													onClick={() => updateStatus(app._id, "Approved")}
+													className="bg-green-600 text-white px-4 py-2 rounded-xl"
+												>
+													Approve
+												</button>
 
-											<button
-												onClick={() => updateStatus(app._id, "rejected")}
-												className="bg-red-600 text-white px-4 py-2 rounded-xl"
-											>
-												Reject
-											</button>
+												<button
+													onClick={() => updateStatus(app._id, "Rejected")}
+													className="bg-red-600 text-white px-4 py-2 rounded-xl"
+												>
+													Reject
+												</button>
 
-											<button
-												onClick={() =>
-													updateStatus(app._id, "request_more_info")
-												}
-												className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
-											>
-												Request Info
-											</button>
-										</div>
-									)}
+												<button
+													onClick={() =>
+													{
+														setSelectedApplication(app._id);
+													}}
+													className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+												>
+													Request Info
+												</button>
+											</div>
+										)}
 
 									{/* Message button ALWAYS aligned */}
 									<button
@@ -209,13 +247,85 @@ const ShelterApplications = () =>
 									>
 										💬 Message
 									</button>
+									{app.infoRequest && (
+										<div className="bg-yellow-50 p-3 rounded-lg">
+											<h4 className="font-semibold">
+												Information Requested
+											</h4>
 
+											<p>{app.infoRequest}</p>
+										</div>
+									)}
+									{app.status === "Info Submitted" && (
+										<div className="bg-blue-50 p-3 rounded-lg">
+											<h4 className="font-semibold">
+												Applicant Information
+											</h4>
+
+											<p><b>House Type:</b> {app.houseType}</p>
+											<p><b>Existing Pets:</b> {app.existingPets}</p>
+											<p><b>Contact Number:</b> {app.contactNumber}</p>
+											<p><b>Address:</b> {app.address}</p>
+										</div>
+									)}
 								</div>
 
 							</div>
 						</div>
 					))}
 			</div>
+			{selectedApplication && (
+				<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+					<div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl">
+
+						<h2 className="text-xl font-bold mb-4">
+							Request Additional Information
+						</h2>
+
+						<div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4">
+							<p className="font-medium mb-3">
+								Please provide:
+							</p>
+
+							<ul className="list-disc pl-5 space-y-2">
+								<li>House Type</li>
+								<li>Existing Pets</li>
+								<li>Contact Number</li>
+								<li>Address</li>
+							</ul>
+						</div>
+
+						<div className="flex justify-end gap-3 mt-4">
+
+							<button
+								onClick={() =>
+								{
+									setSelectedApplication(null);
+								}}
+								className="px-4 py-2 border rounded-lg"
+							>
+								Cancel
+							</button>
+
+							<button
+								onClick={async () =>
+								{
+									await handleRequestInfo(
+										selectedApplication,
+										"Please provide House Type, Existing Pets, Contact Number and Address."
+									);
+
+									setSelectedApplication(null);
+								}}
+								className="bg-yellow-500 text-white px-4 py-2 rounded-lg"
+							>
+								Send Request
+							</button>
+
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
