@@ -3,186 +3,211 @@ import API from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-const Login = () => {
-  const navigate = useNavigate();
+const Login = () =>
+{
+	const navigate = useNavigate();
 
-  const { login } = useAuth();
+	const { login } = useAuth();
 
-  const [loading, setLoading] =
-    useState(false);
+	const [loading, setLoading] =
+		useState(false);
 
-  const [formData, setFormData] =
-    useState({
-      email: "",
-      password: "",
-    });
+	const [formData, setFormData] =
+		useState({
+			email: "",
+			password: "",
+		});
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]:
-        e.target.value,
-    });
-  };
+	const handleChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) =>
+	{
+		setFormData({
+			...formData,
+			[e.target.name]:
+				e.target.value,
+		});
+	};
 
-  const handleSubmit = async (
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
+	const handleSubmit = async (e: React.FormEvent) =>
+	{
+		e.preventDefault();
 
-    try {
-      setLoading(true);
+		// Trim inputs
+		const email = formData.email.trim().toLowerCase();
+		const password = formData.password.trim();
 
-      const res = await API.post(
-        "/api/auth/login",
-        formData
-      );
+		// Email validation
+		if (!email)
+		{
+			toast.error("Email is required");
+			return;
+		}
 
-      console.log(
-        "LOGIN RESPONSE:",
-        res.data
-      );
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      // BACKEND RESPONSE
-      const token =
-        res.data.token;
+		if (!emailRegex.test(email))
+		{
+			toast.error("Please enter a valid email address");
+			return;
+		}
 
-      const user = {
-        _id: res.data._id,
-        name: res.data.name,
-        email: res.data.email,
-        role: res.data.role,
-      };
+		// Password validation
+		if (!password)
+		{
+			toast.error("Password is required");
+			return;
+		}
 
-      // SAVE TO AUTH CONTEXT
-      login(user, token);
+		if (password.length < 6)
+		{
+			toast.error("Password must be at least 6 characters");
+			return;
+		}
 
-      // ROLE-BASED REDIRECT
-      if (user.role === "Shelter") {
-        navigate("/shelter");
+		try
+		{
+			setLoading(true);
 
-      } else if (
-        user.role === "Foster"
-      ) {
-        navigate("/foster");
+			const res = await API.post("/api/auth/login", {
+				email,
+				password,
+			});
 
-      } else {
-        navigate("/");
-      }
+			console.log("LOGIN RESPONSE:", res.data);
 
-    } catch (error: any) {
-      console.log(error);
+			const token = res.data.token;
 
-      toast.error(
-        error.response?.data?.message ||
-          "Login failed"
-      );
+			const user = {
+				_id: res.data._id,
+				name: res.data.name,
+				email: res.data.email,
+				role: res.data.role,
+			};
 
-    } finally {
-      setLoading(false);
-    }
-  };
+			login(user, token);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 px-4">
+			if (user.role === "Shelter")
+			{
+				navigate("/shelter");
+			} else if (user.role === "Foster")
+			{
+				navigate("/foster");
+			} else
+			{
+				navigate("/");
+			}
 
-      <div className="w-full max-w-md bg-white shadow-2xl rounded-3xl p-8">
+		} catch (error: any)
+		{
+			toast.error(
+				error.response?.data?.message || "Login failed"
+			);
+		} finally
+		{
+			setLoading(false);
+		}
+	};
 
-        {/* HEADER */}
-        <div className="text-center mb-8">
+	return (
+		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 px-4">
 
-          <h1 className="text-4xl font-bold text-gray-800">
-            Welcome Back 👋
-          </h1>
+			<div className="w-full max-w-md bg-white shadow-2xl rounded-3xl p-8">
 
-          <p className="text-gray-500 mt-2">
-            Login to continue
-          </p>
+				{/* HEADER */}
+				<div className="text-center mb-8">
 
-        </div>
+					<h1 className="text-4xl font-bold text-gray-800">
+						Welcome Back 👋
+					</h1>
 
-        {/* FORM */}
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-5"
-        >
+					<p className="text-gray-500 mt-2">
+						Login to continue
+					</p>
 
-          {/* EMAIL */}
-          <div>
+				</div>
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+				{/* FORM */}
+				<form
+					onSubmit={handleSubmit}
+					className="space-y-5"
+				>
 
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+					{/* EMAIL */}
+					<div>
 
-          </div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">
+							Email
+						</label>
 
-          {/* PASSWORD */}
-          <div>
+						<input
+							type="email"
+							name="email"
+							placeholder="Enter your email"
+							value={formData.email}
+							onChange={handleChange}
+							autoComplete="email"
+							className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+						/>
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+					</div>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+					{/* PASSWORD */}
+					<div>
 
-          </div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">
+							Password
+						</label>
 
-          {/* BUTTON */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition duration-200"
-          >
-            {loading
-              ? "Logging in..."
-              : "Login"}
-          </button>
+						<input
+							type="password"
+							name="password"
+							placeholder="Enter your password"
+							value={formData.password}
+							onChange={handleChange}
+							autoComplete="current-password"
+							className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+						/>
 
-        </form>
+					</div>
 
-        {/* FOOTER */}
-        <p className="text-center text-gray-500 mt-6">
+					{/* BUTTON */}
+					<button
+						type="submit"
+						disabled={loading}
+						className={`w-full text-white font-semibold py-3 rounded-xl transition duration-200 ${loading
+								? "bg-gray-400 cursor-not-allowed"
+								: "bg-purple-600 hover:bg-purple-700"
+							}`}
+					>
+						{loading ? "Logging in..." : "Login"}
+					</button>	
 
-          Don’t have an account?{" "}
+				</form>
 
-          <Link
-            to="/register"
-            className="text-purple-600 font-semibold hover:underline"
-          >
-            Register
-          </Link>
+				{/* FOOTER */}
+				<p className="text-center text-gray-500 mt-6">
 
-        </p>
-<p className="mt-4 text-center text-sm">
-	Back to{" "}
-	<Link to="/" className="text-blue-600 font-semibold">
-		Home
-	</Link>
-</p>
-      </div>
+					Don’t have an account?{" "}
 
-    </div>
-  );
+					<Link
+						to="/register"
+						className="text-purple-600 font-semibold hover:underline"
+					>
+						Register
+					</Link>
+
+				</p>
+				<p className="mt-4 text-center text-sm">
+					Back to{" "}
+					<Link to="/" className="text-blue-600 font-semibold">
+						Home
+					</Link>
+				</p>
+			</div>
+
+		</div>
+	);
 };
 
 export default Login;

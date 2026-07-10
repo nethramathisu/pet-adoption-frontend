@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Register = () =>
 {
+	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		name: "",
@@ -26,12 +27,64 @@ const Register = () =>
 	const handleSubmit = async (e: React.FormEvent) =>
 	{
 		e.preventDefault();
+
+		const name = formData.name.trim();
+		const email = formData.email.trim().toLowerCase();
+		const password = formData.password.trim();
+
+		// Name validation
+		if (!name)
+		{
+			toast.error("Full name is required");
+			return;
+		}
+
+		if (name.length < 3)
+		{
+			toast.error("Name must be at least 3 characters");
+			return;
+		}
+
+		if (!/^[A-Za-z ]+$/.test(name))
+		{
+			toast.error("Name can contain only letters and spaces");
+			return;
+		}
+
+		// Email validation
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+		if (!emailRegex.test(email))
+		{
+			toast.error("Please enter a valid email address");
+			return;
+		}
+
+		// Password validation
+		const passwordRegex =
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+		if (!passwordRegex.test(password))
+		{
+			toast.error(
+				"Password must be at least 8 characters and include one uppercase letter, one lowercase letter and one number."
+			);
+			return;
+		}
+
 		try
 		{
-			await API.post("/api/auth/register", formData);
+			setLoading(true);
+
+			await API.post("/api/auth/register", {
+				name,
+				email,
+				password,
+				role: formData.role,
+			});
+
 			toast.success("Registered successfully!");
 
-			// Optional: clear form
 			setFormData({
 				name: "",
 				email: "",
@@ -39,11 +92,15 @@ const Register = () =>
 				role: "Adopter",
 			});
 
-			// Go to login page
 			navigate("/login");
 		} catch (error: any)
 		{
-			toast.error(error.response?.data?.message);
+			toast.error(
+				error.response?.data?.message || "Registration failed"
+			);
+		} finally
+		{
+			setLoading(false);
 		}
 	};
 
@@ -60,24 +117,30 @@ const Register = () =>
 
 					<input
 						name="name"
-						placeholder="Full Name"
+						value={formData.name}
 						onChange={handleChange}
+						placeholder="Full Name"
+						autoComplete="name"
 						className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
 					/>
 
 					<input
 						name="email"
 						type="email"
-						placeholder="Email"
+						value={formData.email}
 						onChange={handleChange}
+						placeholder="Email"
+						autoComplete="email"
 						className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
 					/>
 
 					<input
 						name="password"
 						type="password"
-						placeholder="Password"
+						value={formData.password}
 						onChange={handleChange}
+						placeholder="Password"
+						autoComplete="new-password"
 						className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
 					/>
 
@@ -92,9 +155,14 @@ const Register = () =>
 					</select>
 
 					<button
-						className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-lg transition"
+						type="submit"
+						disabled={loading}
+						className={`w-full text-white font-semibold py-3 rounded-lg transition ${loading
+								? "bg-gray-400 cursor-not-allowed"
+								: "bg-purple-600 hover:bg-purple-700"
+							}`}
 					>
-						Register
+						{loading ? "Registering..." : "Register"}
 					</button>
 
 				</form>

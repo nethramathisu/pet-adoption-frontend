@@ -34,7 +34,6 @@ API.interceptors.request.use((config) =>
 	return config;
 });
 
-// ✅ Only retry on GET requests — never retry POST (creates duplicates!)
 API.interceptors.response.use(
 	(response) => response,
 	async (error) =>

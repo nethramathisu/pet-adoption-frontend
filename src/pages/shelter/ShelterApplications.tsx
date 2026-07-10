@@ -38,6 +38,20 @@ const ShelterApplications = () =>
 	const [selectedApplication, setSelectedApplication] =
 		useState<string | null>(null);
 
+	const [showApproveModal, setShowApproveModal] = useState(false);
+
+	const defaultApprovalMessage = `Thank you for your interest in adopting one of our pets! We are delighted to inform you that your adoption application has been approved.
+
+We sincerely appreciate the time and effort you took to complete your application. Based on the information you provided, we believe you can offer a safe, loving, and caring forever home for your new companion.
+
+Our team will contact you shortly to guide you through the next steps, including the adoption process and meeting arrangements.
+
+Congratulations, and thank you for choosing adoption. Together, we're giving a pet the loving home they deserve!`;
+
+
+	const [approvalMessage, setApprovalMessage] = useState(defaultApprovalMessage);
+	const [selectedApprovalId, setSelectedApprovalId] =
+		useState<string | null>(null);
 
 	const [loading, setLoading] =
 		useState(true);
@@ -68,13 +82,20 @@ const ShelterApplications = () =>
 	}, []);
 
 
-	const updateStatus = async (id: string, status: string) =>
+	const updateStatus = async (
+		id: string,
+		status: string,
+		responseMessage = ""
+	) =>
 	{
 		try
 		{
 			console.log("CLICKED:", id, status);
 
-			const res = await API.put(`/api/applications/${id}`, { status });
+			const res = await API.put(`/api/applications/${id}`, {
+				status,
+				responseMessage,
+			});
 
 			console.log("PUT RESPONSE:", res.data);
 
@@ -206,7 +227,14 @@ const ShelterApplications = () =>
 										app.status === "Info Submitted") && (
 											<div className="flex gap-3 flex-wrap">
 												<button
-													onClick={() => updateStatus(app._id, "Approved")}
+													onClick={() =>
+													{
+														setSelectedApprovalId(app._id);
+
+														setApprovalMessage(defaultApprovalMessage);
+
+														setShowApproveModal(true);
+													}}
 													className="bg-green-600 text-white px-4 py-2 rounded-xl"
 												>
 													Approve
@@ -320,6 +348,62 @@ const ShelterApplications = () =>
 								className="bg-yellow-500 text-white px-4 py-2 rounded-lg"
 							>
 								Send Request
+							</button>
+
+						</div>
+					</div>
+				</div>
+			)}
+
+			{showApproveModal && (
+				<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+					<div className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl">
+
+						<h2 className="text-2xl font-bold mb-4">
+							Approve Adoption Application
+						</h2>
+
+						<p className="text-gray-600 mb-3">
+							You can edit the message below before sending it to the adopter.
+						</p>
+
+						<textarea
+							rows={10}
+							value={approvalMessage}
+							onChange={(e) => setApprovalMessage(e.target.value)}
+							className="w-full border rounded-lg p-3"
+						/>
+
+						<div className="flex justify-end gap-3 mt-5">
+
+							<button
+								onClick={() =>
+								{
+									setShowApproveModal(false);
+									setSelectedApprovalId(null);
+								}}
+								className="px-4 py-2 border rounded-lg"
+							>
+								Cancel
+							</button>
+
+							<button
+								onClick={async () =>
+								{
+									if (!selectedApprovalId) return;
+
+									await updateStatus(
+										selectedApprovalId,
+										"Approved",
+										approvalMessage
+									);
+
+									setShowApproveModal(false);
+									setSelectedApprovalId(null);
+								}}
+								className="bg-green-600 text-white px-5 py-2 rounded-lg"
+							>
+								Approve & Send
 							</button>
 
 						</div>

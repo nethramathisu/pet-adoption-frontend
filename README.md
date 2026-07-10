@@ -64,13 +64,13 @@ Nethra
 
 ## shelter login
 ## username:nethra.gmr@gmail.com
-## PWD:123456789
+## PWD:Pet@12345
 
 
 ## foster login
 ## username:foster@gmail.com
-## PWD:12345678
+## PWD:Pet@12345
 
 ## Adopter login
 ## username:leela@gmail.com
-## PWD:12345678
+## PWD:Pet@12345
